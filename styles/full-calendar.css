@@ -1,0 +1,29 @@
+.fc-button {
+    background-color: white !important; 
+    color: black !important; 
+    padding: 5px !important;
+    padding-left: 10px !important;
+    padding-right: 10px !important;
+    font-size: 0.8em !important;
+    transition: background-color 0.3s;
+    border: solid 1px #E7E5E4 !important;
+    box-shadow: none !important;
+  }
+  
+  .fc-button:hover {
+    background-color: #2563eb;
+  }
+.fc-toolbar-title {
+    font-size: 1.5em !important;
+    font-weight: bold;
+}
+@media (max-width: 640px) { 
+    .fc-header-toolbar {
+        flex-direction: column !important;
+        gap: 0.5rem; 
+    }
+}
+
+.fc-event {
+    overflow: auto;
+}

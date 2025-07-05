@@ -1,0 +1,56 @@
+[33mcommit 4d9ede6897128e746eb764252ec336504d85dd25[m[33m ([m[1;36mHEAD -> [m[1;32mrenz[m[33m)[m
+Author: unknown <renz_litan123@yahoo.com>
+Date:   Mon Feb 24 17:12:19 2025 +0800
+
+    Added assessment, attendance ui module
+
+[33mcommit f6e26012d08dc6943fd95cb9ac207857751314ac[m[33m ([m[1;31morigin/renz[m[33m)[m
+Author: unknown <renz_litan123@yahoo.com>
+Date:   Sun Feb 23 20:23:52 2025 +0800
+
+    Added View for Student, Consents, Profile Pictures, Applicants
+
+[33mcommit 0732ebc9944142ff89e1533c8bf9f52caa7c1d23[m
+Author: unknown <renz_litan123@yahoo.com>
+Date:   Sun Feb 23 20:22:33 2025 +0800
+
+    Added View for Student, Consents, Profile Pictures
+
+[33mcommit 8959bbdab299ba50bd6ed4984a9637051a481dd6[m
+Author: unknown <renz_litan123@yahoo.com>
+Date:   Thu Feb 20 19:02:14 2025 +0800
+
+    Added Student Profile View and navigation
+
+[33mcommit 73ee1ca03137d453680213d424bfab4d5d2439dc[m
+Author: unknown <renz_litan123@yahoo.com>
+Date:   Thu Feb 20 16:15:34 2025 +0800
+
+    Create Student List and Add Form UI
+
+[33mcommit e0695c0991ef30aaaba8574a6e1a72f7ddcbaf79[m[33m ([m[1;31morigin/qa[m[33m, [m[1;31morigin/pro[m[33m, [m[1;31morigin/dev[m[33m)[m
+Merge: 94b5a5f bc4bbef
+Author: Ihsan Saleemkhan <ihsan@gmail.com>
+Date:   Thu Feb 20 08:52:01 2025 +0300
+
+    [AppModal]
+    
+    [AppModal]
+
+[33mcommit bc4bbefcb4d0dd0fa082f0802008f384f6450d9b[m
+Author: iss-glennnerrie <ihsan@gmail.com>
+Date:   Thu Feb 20 08:51:16 2025 +0300
+
+    [AppModal]
+
+[33mcommit 94b5a5f1fd2cb3466e3bff6fc11c4c5ea27fcc70[m
+Author: iss-glennnerrie <ihsan@gmail.com>
+Date:   Wed Feb 19 14:23:26 2025 +0300
+
+    Template
+
+[33mcommit 6da7f9e4998ae63b615317cc6448f445eed6f7b2[m
+Author: iss-glennnerrie <ihsan@gmail.com>
+Date:   Tue Feb 18 14:35:08 2025 +0300
+
+    Init Commit
