@@ -9,12 +9,12 @@ import { useMutation } from '@tanstack/react-query';
 import { Form,  FormControl, FormField, FormItem, FormLabel,FormMessage} from "@/components/ui/form"
 import { toast } from "sonner";
 import { authApi } from "@/api/authApi";
-import { Grid2X2, Loader} from "lucide-react";
+import { Loader} from "lucide-react";
 import { AxiosError } from "axios";
-import { StoreToken } from "@/services/handlers/TokenHandler";
+// import { StoreToken } from "@/services/handlers/TokenHandler";
 import { useActiveSidebar } from "@/hooks/use-active-sidebar";
-import Image from "next/image";
-import ImageSrc from "@/constants/image";
+// import Image from "next/image";
+// import ImageSrc from "@/constants/image";
 
 type LoginForm = z.infer<typeof loginSchema>; 
 
@@ -35,10 +35,12 @@ export default function AuthForm(){
     };
 
     const storeMutation = useMutation({
-        mutationFn: (credentials: LoginForm) => authApi.login(credentials),
-        onSuccess: (data) => { 
+        // mutationFn: (credentials: LoginForm) => authApi.login(credentials),
+         mutationFn: () => authApi.login(),
+        // onSuccess: (data) => { 
+            onSuccess: () => { 
             toast.success("Welcome");
-            StoreToken(data.data.data.access_token);
+            // StoreToken(data.data.data.access_token);
             setActiveSidebar("dashboard");
             window.location.href = "/dashboard";
         },

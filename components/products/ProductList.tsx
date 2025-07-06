@@ -6,11 +6,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ChevronLeft, ChevronRight, Layers, PackageX } from "lucide-react";
+import { ChevronLeft, ChevronRight, Layers, PackageX, MoreHorizontal } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://3.128.212.155:8081";
 
 type Product = {
   id: number;
@@ -27,11 +25,10 @@ type ProductListProps = {
   searchProduct: string;
   products: Product[];
   setProducts: (products: Product[]) => void;
-  setSelectedProduct: (product: Product | null) => void;
-  setOpenModal: (open: boolean) => void;
+  onEditProduct: (product: Product) => void;
 };
 
-export default function ProductList({ searchProduct, products, setProducts, setSelectedProduct, setOpenModal }: ProductListProps) {
+export default function ProductList({ searchProduct, products, setProducts, onEditProduct }: ProductListProps) {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(12);
 
@@ -44,7 +41,7 @@ export default function ProductList({ searchProduct, products, setProducts, setS
 
   const handleDelete = async (id: number) => {
     try {
-      await axios.delete(`${API_BASE_URL}/api/products/${id}`);
+      await axios.delete(`/api/products/${id}`);
       setProducts(products.filter((product) => product.id !== id));
     } catch (error) {
       console.error("Error deleting product:", error);
@@ -91,10 +88,7 @@ export default function ProductList({ searchProduct, products, setProducts, setS
                         <DropdownMenuItem>View details</DropdownMenuItem>
                       </Link>
                       <DropdownMenuItem
-                        onClick={() => {
-                          setSelectedProduct(product);
-                          setOpenModal(true);
-                        }}
+                        onClick={() => onEditProduct(product)}
                       >
                         Edit product
                       </DropdownMenuItem>

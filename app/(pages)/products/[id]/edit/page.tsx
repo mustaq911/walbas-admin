@@ -44,10 +44,10 @@ export default function EditProductPage() {
     if (id) fetchProduct();
   }, [id]);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleSubmit = async () => {
+    // e.preventDefault();
     try {
-      const response = await axios.put(`${API_BASE_URL}/api/products/${id}`, product);
+      await axios.put(`${API_BASE_URL}/api/products/${id}`, product);
       router.push(`/products/${id}`);
     } catch (error) {
       console.error("Error updating product:", error);

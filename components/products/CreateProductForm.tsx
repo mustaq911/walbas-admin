@@ -9,8 +9,6 @@ import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://3.128.212.155:8081";
-
 type Product = {
   id?: number;
   title: string;
@@ -24,12 +22,10 @@ type Product = {
 
 type CreateProductFormProps = {
   selectedProduct: Product | null;
-  setSelectedProduct: (product: Product | null) => void;
-  setOpenModal: (open: boolean) => void;
-  setProducts: (products: Product[]) => void;
+  onProductSaved: () => void;
 };
 
-export default function CreateProductForm({ selectedProduct, setSelectedProduct, setOpenModal, setProducts }: CreateProductFormProps) {
+export default function CreateProductForm({ selectedProduct, onProductSaved }: CreateProductFormProps) {
   const [product, setProduct] = useState<Product>({
     title: selectedProduct?.title || "",
     description: selectedProduct?.description || "",
@@ -43,17 +39,12 @@ export default function CreateProductForm({ selectedProduct, setSelectedProduct,
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      if (selectedProduct) {
-        // Update product
-        const response = await axios.put(`${API_BASE_URL}/api/products/${selectedProduct.id}`, product);
-        setProducts((prev) => prev.map((p) => (p.id === selectedProduct.id ? response.data : p)));
+      if (selectedProduct?.id) {
+        await axios.put(`/api/products/${selectedProduct.id}`, product);
       } else {
-        // Create new product
-        const response = await axios.post(`${API_BASE_URL}/api/products`, product);
-        setProducts((prev) => [...prev, response.data]);
+        await axios.post(`/api/products`, product);
       }
-      setOpenModal(false);
-      setSelectedProduct(null);
+      onProductSaved();
     } catch (error) {
       console.error("Error saving product:", error);
     }

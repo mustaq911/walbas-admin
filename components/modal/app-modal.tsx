@@ -40,7 +40,7 @@ const AppModal = ({button, title, description, children, width, open, setOpen} :
     
     if (isDesktop) {
         return (
-            <Dialog open={open} onOpenChange={setOpen}>
+            <Dialog open={open ?? undefined} onOpenChange={setOpen ?? undefined}>
                 <DialogTrigger asChild>
                     {button}
                 </DialogTrigger>
@@ -57,7 +57,7 @@ const AppModal = ({button, title, description, children, width, open, setOpen} :
    
     // For Mobile
     return (
-        <Drawer open={open} onOpenChange={setOpen}>
+        <Drawer open={open ?? undefined} onOpenChange={setOpen ?? undefined}>
             <DrawerTrigger asChild>
                 {button}
             </DrawerTrigger>

@@ -12,27 +12,53 @@ import ProductList from "@/components/products/ProductList";
 import CreateProductForm from "@/components/products/CreateProductForm";
 import useProduct from "@/hooks/products/use-product";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://3.128.212.155:8081";
+// Define Product type
+type Product = {
+  id: number;
+  title: string;
+  description: string;
+  category: string;
+  imageUrl: string;
+  basePrice: number;
+  auctionStart: string;
+  auctionEnd: string;
+};
 
 export default function ProductPage() {
   const { searchProduct, setSearchProduct, openModal, setOpenModal, selectedProduct, setSelectedProduct } = useProduct();
-  const [products, setProducts] = useState([]);
+  const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
+  const fetchProducts = async () => {
+    setIsLoading(true);
+    try {
+      const response = await axios.get('/api/products/all');
+      // Transform API data to ensure id is a number
+      setProducts(response.data.map((p: Product) => ({
+        ...p,
+        id: Number(p.id), // Convert id to number, assuming API returns id
+      })));
+    } catch (error) {
+      console.error("Error fetching products:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchProducts = async () => {
-      setIsLoading(true);
-      try {
-        const response = await axios.get(`${API_BASE_URL}/api/products/all`);
-        setProducts(response.data);
-      } catch (error) {
-        console.error("Error fetching products:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
     fetchProducts();
   }, []);
+
+  const handleProductSaved = async () => {
+    await fetchProducts();
+    setOpenModal(false);
+    setSelectedProduct(null);
+  };
+
+  const handleEditProduct = (product: Product) => {
+    setSelectedProduct(product);
+    setOpenModal(true);
+  };
 
   return (
     <AppContent title="Products">
@@ -55,25 +81,27 @@ export default function ProductPage() {
           description="Product Details"
           open={openModal}
           setOpen={setOpenModal}
+          button={
+            <Button className="w-full sm:w-auto">
+              <Plus className="mr-2 h-4 w-4" /> Add Product
+            </Button>
+          }
         >
           <CreateProductForm
             selectedProduct={selectedProduct}
-            setSelectedProduct={setSelectedProduct}
-            setOpenModal={setOpenModal}
-            setProducts={setProducts}
+            onProductSaved={handleProductSaved}
           />
         </AppModal>
-        <Button className="w-full sm:w-auto" onClick={() => {
-          setSelectedProduct(null);
-          setOpenModal(true);
-        }}>
-          <Plus className="mr-2 h-4 w-4" /> Add Product
-        </Button>
       </div>
       {isLoading ? (
         <div className="text-center py-12">Loading...</div>
       ) : (
-        <ProductList searchProduct={searchProduct} products={products} setProducts={setProducts} setSelectedProduct={setSelectedProduct} setOpenModal={setOpenModal} />
+        <ProductList
+          searchProduct={searchProduct}
+          products={products}
+          setProducts={setProducts}
+          onEditProduct={handleEditProduct}
+        />
       )}
     </AppContent>
   );
