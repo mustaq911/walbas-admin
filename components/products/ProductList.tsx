@@ -41,7 +41,7 @@ export default function ProductList({ searchProduct, products, setProducts, onEd
 
   const handleDelete = async (id: number) => {
     try {
-      await axios.delete(`/api/products/${id}`);
+      await axios.delete(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/products/${id}`);
       setProducts(products.filter((product) => product.id !== id));
     } catch (error) {
       console.error("Error deleting product:", error);

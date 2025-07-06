@@ -32,7 +32,7 @@ export default function ProductPage() {
   const fetchProducts = async () => {
     setIsLoading(true);
     try {
-      const response = await axios.get('/api/products/all');
+      const response = await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/products/all`);
       // Transform API data to ensure id is a number
       setProducts(response.data.map((p: Product) => ({
         ...p,

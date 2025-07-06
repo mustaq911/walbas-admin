@@ -40,9 +40,9 @@ export default function CreateProductForm({ selectedProduct, onProductSaved }: C
     e.preventDefault();
     try {
       if (selectedProduct?.id) {
-        await axios.put(`/api/products/${selectedProduct.id}`, product);
+        await axios.put(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/products/${selectedProduct.id}`, product);
       } else {
-        await axios.post(`/api/products`, product);
+        await axios.post(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/products`, product);
       }
       onProductSaved();
     } catch (error) {
