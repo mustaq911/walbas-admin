@@ -3,12 +3,11 @@
 import { useState } from "react";
 import axios from "axios";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ChevronLeft, ChevronRight, Layers, PackageX, MoreHorizontal } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
 
 type Product = {
   id: number;
@@ -25,10 +24,11 @@ type ProductListProps = {
   searchProduct: string;
   products: Product[];
   setProducts: (products: Product[]) => void;
+  onViewProduct: (product: Product) => void;
   onEditProduct: (product: Product) => void;
 };
 
-export default function ProductList({ searchProduct, products, setProducts, onEditProduct }: ProductListProps) {
+export default function ProductList({ searchProduct, products, setProducts, onViewProduct, onEditProduct }: ProductListProps) {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(12);
 
@@ -41,83 +41,83 @@ export default function ProductList({ searchProduct, products, setProducts, onEd
 
   const handleDelete = async (id: number) => {
     try {
-      await axios.delete(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/products/${id}`);
+      await axios.delete(`/products/${id}`);
       setProducts(products.filter((product) => product.id !== id));
     } catch (error) {
       console.error("Error deleting product:", error);
+      alert("Failed to delete product. Please try again.");
     }
   };
 
   return (
     <>
       {filteredProducts.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {displayedProducts.map((product) => (
-            <Card key={product.id} className="overflow-hidden">
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between mb-3">
-                  <div className="flex items-center gap-3">
-                    <div className="relative">
-                      {product.imageUrl ? (
-                        <Image
-                          src={product.imageUrl}
-                          alt={`${product.title}'s image`}
-                          width={100}
-                          height={100}
-                          className="rounded-md object-cover"
-                        />
-                      ) : (
-                        <div className="w-14 h-14 rounded-md bg-gray-300 flex items-center justify-center">
-                          <Layers className="h-8 w-8 text-gray-600" />
-                        </div>
-                      )}
-                    </div>
-                    <div>
-                      <h2 className="text-lg font-semibold truncate">{product.title}</h2>
-                      <p className="text-xs text-gray-500 truncate">{product.category}</p>
-                    </div>
-                  </div>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                        <MoreHorizontal className="h-4 w-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <Link href={`/products/${product.id}`}>
-                        <DropdownMenuItem>View details</DropdownMenuItem>
-                      </Link>
-                      <DropdownMenuItem
-                        onClick={() => onEditProduct(product)}
-                      >
-                        Edit product
-                      </DropdownMenuItem>
-                      <DropdownMenuItem
-                        className="text-red-600"
-                        onClick={() => handleDelete(product.id)}
-                      >
-                        Delete product
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </div>
-                <div className="grid grid-cols-2 gap-y-1 text-sm">
-                  <div>
-                    Price: <span className="font-medium text-muted-foreground">${product.basePrice.toFixed(2)}</span>
-                  </div>
-                  <div>
-                    Category: <span className="font-medium text-muted-foreground">{product.category}</span>
-                  </div>
-                  <div>
-                    Auction Start: <span className="font-medium text-muted-foreground">{product.auctionStart}</span>
-                  </div>
-                  <div>
-                    Auction End: <span className="font-medium text-muted-foreground">{product.auctionEnd}</span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+        <div className="border rounded-lg overflow-x-auto">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="w-[100px]">Image</TableHead>
+                <TableHead>Title</TableHead>
+                <TableHead>Category</TableHead>
+                <TableHead>Base Price</TableHead>
+                <TableHead>Auction Start</TableHead>
+                <TableHead>Auction End</TableHead>
+                <TableHead className="w-[100px] text-right">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {displayedProducts.map((product) => (
+                <TableRow key={product.id}>
+                  <TableCell>
+                    {product.imageUrl ? (
+                      <Image
+                        src={product.imageUrl}
+                        alt={`${product.title}'s image`}
+                        width={50}
+                        height={50}
+                        className="rounded-md object-cover"
+                        onError={(e) => {
+                          e.currentTarget.src = "/placeholder.jpg";
+                        }}
+                      />
+                    ) : (
+                      <div className="w-12 h-12 rounded-md bg-gray-300 flex items-center justify-center">
+                        <Layers className="h-6 w-6 text-gray-600" />
+                      </div>
+                    )}
+                  </TableCell>
+                  <TableCell className="font-medium">{product.title}</TableCell>
+                  <TableCell>{product.category}</TableCell>
+                  <TableCell>${product.basePrice.toFixed(2)}</TableCell>
+                  <TableCell>{product.auctionStart}</TableCell>
+                  <TableCell>{product.auctionEnd}</TableCell>
+                  <TableCell className="text-right">
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                          <MoreHorizontal className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem onClick={() => onViewProduct(product)}>
+                          View details
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => onEditProduct(product)}>
+                          Edit product
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          className="text-red-600"
+                          onClick={() => handleDelete(product.id)}
+                        >
+                          Delete product
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
         </div>
       ) : (
         <div className="text-center py-12">

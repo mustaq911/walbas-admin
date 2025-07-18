@@ -6,13 +6,12 @@ import AppContent from "@/components/admin/content/app-content";
 import { Plus, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import AppModal from "@/components/modal/app-modal";
 import ProductFilterSheet from "@/components/products/ProductFilterSheet";
 import ProductList from "@/components/products/ProductList";
 import CreateProductForm from "@/components/products/CreateProductForm";
-import useProduct from "@/hooks/products/use-product";
+import ViewProductModal from "@/components/products/ViewProductModal";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
-// Define Product type
 type Product = {
   id: number;
   title: string;
@@ -25,21 +24,37 @@ type Product = {
 };
 
 export default function ProductPage() {
-  const { searchProduct, setSearchProduct, openModal, setOpenModal, selectedProduct, setSelectedProduct } = useProduct();
+  const [searchProduct, setSearchProduct] = useState("");
   const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [modalOpen, setModalOpen] = useState<"create" | "edit" | "view" | null>(null);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
   const fetchProducts = async () => {
     setIsLoading(true);
+    setError(null);
     try {
-      const response = await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/products/all`);
-      // Transform API data to ensure id is a number
-      setProducts(response.data.map((p: Product) => ({
-        ...p,
-        id: Number(p.id), // Convert id to number, assuming API returns id
-      })));
-    } catch (error) {
+      const response = await axios.get("/products/get/all");
+      if (Array.isArray(response.data)) {
+        setProducts(
+          response.data.map((p: any) => ({
+            id: Number(p.id) || 0,
+            title: p.title || "Unknown",
+            description: p.description || "",
+            category: p.category || "Uncategorized",
+            imageUrl: p.imageUrl || "/placeholder.jpg",
+            basePrice: Number(p.basePrice) || 0,
+            auctionStart: p.auctionStart || "",
+            auctionEnd: p.auctionEnd || "",
+          }))
+        );
+      } else {
+        setError("Invalid API response format");
+      }
+    } catch (error: any) {
       console.error("Error fetching products:", error);
+      setError(error.response?.data?.message || "Failed to load products. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -49,15 +64,58 @@ export default function ProductPage() {
     fetchProducts();
   }, []);
 
-  const handleProductSaved = async () => {
-    await fetchProducts();
-    setOpenModal(false);
-    setSelectedProduct(null);
+  const handleCreateProduct = async (data: any) => {
+    const formData = new FormData();
+    formData.append("title", data.title);
+    formData.append("description", data.description);
+    formData.append("category", data.category);
+    formData.append("basePrice", data.basePrice.toString());
+    formData.append("auctionStartDate", data.auctionStart);
+    formData.append("auctionEndDate", data.auctionEnd);
+    if (data.image) formData.append("image", data.image);
+
+    try {
+      const response = await axios.post("/products/create", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      setProducts([...products, response.data]);
+      setModalOpen(null);
+    } catch (error) {
+      throw error;
+    }
   };
 
-  const handleEditProduct = (product: Product) => {
+  const handleEditProduct = async (data: any) => {
+    if (!selectedProduct) return;
+    const formData = new FormData();
+    formData.append("id", selectedProduct.id.toString());
+    formData.append("title", data.title);
+    formData.append("description", data.description);
+    formData.append("category", data.category);
+    formData.append("basePrice", data.basePrice.toString());
+    formData.append("auctionStartDate", data.auctionStart);
+    formData.append("auctionEndDate", data.auctionEnd);
+    if (data.image) formData.append("image", data.image);
+
+    try {
+      const response = await axios.post("/products/create", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      setProducts(products.map((p) => (p.id === selectedProduct.id ? response.data : p)));
+      setModalOpen(null);
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  const handleViewProduct = (product: Product) => {
     setSelectedProduct(product);
-    setOpenModal(true);
+    setModalOpen("view");
+  };
+
+  const handleEditProductOpen = (product: Product) => {
+    setSelectedProduct(product);
+    setModalOpen("edit");
   };
 
   return (
@@ -70,39 +128,53 @@ export default function ProductPage() {
               type="text"
               placeholder="Search products..."
               className="pl-8 w-full"
-              value={searchProduct || ""}
+              value={searchProduct}
               onChange={(e) => setSearchProduct(e.target.value)}
             />
           </div>
           <ProductFilterSheet />
         </div>
-        <AppModal
-          title={selectedProduct ? "Edit Product" : "Add Product"}
-          description="Product Details"
-          open={openModal}
-          setOpen={setOpenModal}
-          button={
-            <Button className="w-full sm:w-auto">
-              <Plus className="mr-2 h-4 w-4" /> Add Product
-            </Button>
-          }
-        >
-          <CreateProductForm
-            selectedProduct={selectedProduct}
-            onProductSaved={handleProductSaved}
-          />
-        </AppModal>
+        <Button onClick={() => setModalOpen("create")} className="w-full sm:w-auto">
+          <Plus className="mr-2 h-4 w-4" /> Add Product
+        </Button>
       </div>
       {isLoading ? (
         <div className="text-center py-12">Loading...</div>
+      ) : error ? (
+        <div className="text-center py-12 text-red-500">{error}</div>
       ) : (
         <ProductList
           searchProduct={searchProduct}
           products={products}
           setProducts={setProducts}
-          onEditProduct={handleEditProduct}
+          onViewProduct={handleViewProduct}
+          onEditProduct={handleEditProductOpen}
         />
       )}
+      <Dialog open={modalOpen !== null} onOpenChange={() => setModalOpen(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>
+              {modalOpen === "create" ? "Create Product" : modalOpen === "edit" ? "Edit Product" : "Product Details"}
+            </DialogTitle>
+          </DialogHeader>
+          {modalOpen === "view" && selectedProduct && (
+            <ViewProductModal
+              product={selectedProduct}
+              onClose={() => setModalOpen(null)}
+              onEdit={() => setModalOpen("edit")}
+            />
+          )}
+          {(modalOpen === "create" || modalOpen === "edit") && (
+            <CreateProductForm
+              product={modalOpen === "edit" && selectedProduct ? { ...selectedProduct, image: null } : undefined}
+              onSubmit={modalOpen === "create" ? handleCreateProduct : handleEditProduct}
+              onCancel={() => setModalOpen(null)}
+              isEdit={modalOpen === "edit"}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
     </AppContent>
   );
 }

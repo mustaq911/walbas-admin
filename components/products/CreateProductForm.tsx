@@ -1,57 +1,69 @@
-"use client";
-
 import { useState } from "react";
-import axios from "axios";
 import { Button } from "@/components/ui/button";
-import { DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 type Product = {
   id?: number;
   title: string;
   description: string;
   category: string;
-  imageUrl: string;
+  image?: File | null;
   basePrice: number;
   auctionStart: string;
   auctionEnd: string;
 };
 
 type CreateProductFormProps = {
-  selectedProduct: Product | null;
-  onProductSaved: () => void;
+  product?: Product;
+  onSubmit: (data: Product) => Promise<void>;
+  onCancel: () => void;
+  isEdit?: boolean;
 };
 
-export default function CreateProductForm({ selectedProduct, onProductSaved }: CreateProductFormProps) {
-  const [product, setProduct] = useState<Product>({
-    title: selectedProduct?.title || "",
-    description: selectedProduct?.description || "",
-    category: selectedProduct?.category || "",
-    imageUrl: selectedProduct?.imageUrl || "",
-    basePrice: selectedProduct?.basePrice || 0,
-    auctionStart: selectedProduct?.auctionStart || "",
-    auctionEnd: selectedProduct?.auctionEnd || "",
-  });
+export default function CreateProductForm({ product, onSubmit, onCancel, isEdit = false }: CreateProductFormProps) {
+  const [formData, setFormData] = useState<Product>(
+    product || {
+      title: "",
+      description: "",
+      category: "",
+      image: null,
+      basePrice: 0,
+      auctionStart: "",
+      auctionEnd: "",
+    }
+  );
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsLoading(true);
+    setError(null);
     try {
-      if (selectedProduct?.id) {
-        await axios.put(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/products/${selectedProduct.id}`, product);
-      } else {
-        await axios.post(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/products`, product);
-      }
-      onProductSaved();
-    } catch (error) {
-      console.error("Error saving product:", error);
+      await onSubmit(formData);
+    } catch (error: any) {
+      setError(error.response?.data?.message || `Failed to ${isEdit ? "update" : "create"} product. Please try again.`);
+    } finally {
+      setIsLoading(false);
     }
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0] || null;
+    setFormData({ ...formData, image: file });
   };
 
   return (
     <form onSubmit={handleSubmit}>
+      {error && (
+        <Alert variant="destructive" className="mb-4">
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+      )}
       <ScrollArea className="h-[450px]">
         <div className="grid gap-4 py-4 px-4">
           <div className="grid grid-cols-3 items-center gap-4">
@@ -60,9 +72,9 @@ export default function CreateProductForm({ selectedProduct, onProductSaved }: C
             </Label>
             <Input
               id="title"
-              value={product.title}
-              onChange={(e) => setProduct({ ...product, title: e.target.value })}
-              className="col-span-3"
+              value={formData.title}
+              onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+              className="col-span-2"
             />
           </div>
           <div className="grid grid-cols-3 items-center gap-4">
@@ -71,9 +83,9 @@ export default function CreateProductForm({ selectedProduct, onProductSaved }: C
             </Label>
             <Input
               id="description"
-              value={product.description}
-              onChange={(e) => setProduct({ ...product, description: e.target.value })}
-              className="col-span-3"
+              value={formData.description}
+              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+              className="col-span-2"
             />
           </div>
           <div className="grid grid-cols-3 items-center gap-4">
@@ -81,10 +93,10 @@ export default function CreateProductForm({ selectedProduct, onProductSaved }: C
               Category
             </Label>
             <Select
-              value={product.category}
-              onValueChange={(value) => setProduct({ ...product, category: value })}
+              value={formData.category}
+              onValueChange={(value) => setFormData({ ...formData, category: value })}
             >
-              <SelectTrigger className="col-span-3">
+              <SelectTrigger className="col-span-2">
                 <SelectValue placeholder="Select category" />
               </SelectTrigger>
               <SelectContent>
@@ -96,14 +108,15 @@ export default function CreateProductForm({ selectedProduct, onProductSaved }: C
             </Select>
           </div>
           <div className="grid grid-cols-3 items-center gap-4">
-            <Label htmlFor="imageUrl" className="text-left">
-              Image URL
+            <Label htmlFor="image" className="text-left">
+              Image
             </Label>
             <Input
-              id="imageUrl"
-              value={product.imageUrl}
-              onChange={(e) => setProduct({ ...product, imageUrl: e.target.value })}
-              className="col-span-3"
+              id="image"
+              type="file"
+              accept="image/*"
+              onChange={handleFileChange}
+              className="col-span-2"
             />
           </div>
           <div className="grid grid-cols-3 items-center gap-4">
@@ -113,9 +126,16 @@ export default function CreateProductForm({ selectedProduct, onProductSaved }: C
             <Input
               id="basePrice"
               type="number"
-              value={product.basePrice}
-              onChange={(e) => setProduct({ ...product, basePrice: parseFloat(e.target.value) })}
-              className="col-span-3"
+              step="0.01"
+              min="0"
+              value={formData.basePrice || ""}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  basePrice: e.target.value ? parseFloat(e.target.value) : 0,
+                })
+              }
+              className="col-span-2"
             />
           </div>
           <div className="grid grid-cols-3 items-center gap-4">
@@ -125,9 +145,9 @@ export default function CreateProductForm({ selectedProduct, onProductSaved }: C
             <Input
               id="auctionStart"
               type="date"
-              value={product.auctionStart}
-              onChange={(e) => setProduct({ ...product, auctionStart: e.target.value })}
-              className="col-span-3"
+              value={formData.auctionStart}
+              onChange={(e) => setFormData({ ...formData, auctionStart: e.target.value })}
+              className="col-span-2"
             />
           </div>
           <div className="grid grid-cols-3 items-center gap-4">
@@ -137,16 +157,21 @@ export default function CreateProductForm({ selectedProduct, onProductSaved }: C
             <Input
               id="auctionEnd"
               type="date"
-              value={product.auctionEnd}
-              onChange={(e) => setProduct({ ...product, auctionEnd: e.target.value })}
-              className="col-span-3"
+              value={formData.auctionEnd}
+              onChange={(e) => setFormData({ ...formData, auctionEnd: e.target.value })}
+              className="col-span-2"
             />
           </div>
         </div>
       </ScrollArea>
-      <DialogFooter>
-        <Button type="submit">Save changes</Button>
-      </DialogFooter>
+      <div className="flex justify-end gap-4 mt-4">
+        <Button type="submit" disabled={isLoading}>
+          {isLoading ? (isEdit ? "Updating..." : "Creating...") : isEdit ? "Update Product" : "Create Product"}
+        </Button>
+        <Button variant="outline" onClick={onCancel} disabled={isLoading}>
+          Cancel
+        </Button>
+      </div>
     </form>
   );
 }
