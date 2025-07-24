@@ -18,7 +18,7 @@ const nextConfig = {
     return [
       {
         source: '/products/:path*',
-        destination: 'http://3.148.182.60:8081/products/:path*',
+        destination: 'http://18.117.9.233:8080/products/:path*',
       },
     ];
   },
