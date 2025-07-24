@@ -6,12 +6,7 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'walbas-product.s3.us-east-2.amazonaws.com',
         pathname: '/**',
-      },
-      {
-        protocol: 'https',
-        hostname: 'walbaseproduct.s3.us-east-2.amazonaws.com',
-        pathname: '/**',
-      },
+      }
     ],
   },
   async rewrites() {
@@ -19,6 +14,14 @@ const nextConfig = {
       {
         source: '/products/:path*',
         destination: 'http://18.117.9.233:8080/products/:path*',
+      },
+       {
+        source: '/user/:path*',
+        destination: 'http://18.117.9.233:8080/user/:path*',
+      },
+       {
+        source: '/bids',
+        destination: 'http://18.117.9.233:8080/bids/:path*',
       },
     ];
   },

@@ -1,4 +1,4 @@
-import { Layers, LucideIcon, Gavel } from 'lucide-react';
+import { Users, LucideIcon } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 
 
@@ -22,7 +22,7 @@ type Group = {
 };
 
 
-export function ProductMenuItem(): Group[] {
+export function UserMenuItem(): Group[] {
     const pathname = usePathname();
 
     const menuList = [
@@ -30,19 +30,10 @@ export function ProductMenuItem(): Group[] {
             groupLabel: "",
              menus: [
                 {
-                    href: "/products",
-                    label: "Manage Product",
-                    icon: Layers,
-                    active: pathname == "/products",
-                    submenus: [
-                      
-                    ]
-                },
-                {
-                    href: "/auction",
-                    label: "Manage Auction",
-                    icon: Gavel,
-                    active: pathname == "/auction",
+                    href: "/users",
+                    label: "Manage User",
+                    icon: Users,
+                    active: pathname == "/users",
                     submenus: [
                       
                     ]

@@ -1,5 +1,5 @@
 import { useActiveSidebar } from '@/hooks/use-active-sidebar';
-import { Package, Bot, LayoutDashboard, LucideIcon} from 'lucide-react';
+import { Package, Bot, LayoutDashboard, LucideIcon, Users} from 'lucide-react';
 // import { usePathname } from 'next/navigation';
 
 type Menu = {
@@ -27,6 +27,13 @@ export function MainSidebarMenuItem(): Menu[] {
             href: "/products",
             icon: Package,
             active: activeSidebar == "products",
+        },
+         {   
+            key: "users",
+            label: "user",
+            href: "/users",
+            icon: Users,
+            active: activeSidebar == "users",
         },
         // {   
         //     key: "school",
