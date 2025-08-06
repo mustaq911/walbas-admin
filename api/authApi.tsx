@@ -20,18 +20,28 @@ export const authApi = {
           secure: process.env.NODE_ENV === 'production', // Secure in production
           sameSite: 'strict',
         });
+        console.log('Token stored in cookie:', response.data.token); // Debug log
+      } else {
+        console.warn('No token received in response:', response.data); // Debug log
       }
 
       console.log('Login API response:', response.data); // Debug log
       return response.data;
     } catch (error) {
       console.error('Login API error:', error); // Debug log
-      throw error;
+      throw error; // Let the caller handle the error
     }
   },
   logout: async () => {
-    const response = await Axi.get('/api/logout');
-    Cookies.remove('auth_token');
-    return response;
+    try {
+      const response = await Axi.get('/api/logout');
+      Cookies.remove('auth_token');
+      console.log('Logout successful, token removed'); // Debug log
+      return response.data;
+    } catch (error) {
+      console.error('Logout API error:', error); // Debug log
+      Cookies.remove('auth_token'); // Remove token even if logout fails
+      throw error;
+    }
   },
 };

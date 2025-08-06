@@ -38,23 +38,22 @@ export default function AuthForm() {
     },
     onError: (error: AxiosError<{ errors: Record<string, string[]>; message: string }>) => {
       console.log('Login error:', error.response?.data); // Debug log
-      if (error.response) {
-        const { errors, message } = error.response.data;
-        toast.error(message || 'Login failed. Please check your credentials.');
-        if (errors?.username) {
+      const message = error.response?.data?.message || 'Login failed. Please check your credentials.';
+      toast.error(message);
+      if (error.response?.data?.errors) {
+        const { errors } = error.response.data;
+        if (errors.username) {
           form.setError('username', {
             type: 'manual',
             message: errors.username.join(', '),
           });
         }
-        if (errors?.password) {
+        if (errors.password) {
           form.setError('password', {
             type: 'manual',
             message: errors.password.join(', '),
           });
         }
-      } else {
-        toast.error('An unexpected error occurred. Please try again.');
       }
     },
   });
