@@ -1,3 +1,4 @@
+"use client";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,8 +14,10 @@ type Product = {
   category: string;
   image?: File | null;
   basePrice: number;
-  auctionStart: string;
-  auctionEnd: string;
+  auctionStart: string; // Date part, e.g., "2025-08-05"
+  auctionStartTime: string; // Time part, e.g., "21:04"
+  auctionEnd: string; // Date part, e.g., "2025-08-08"
+  auctionEndTime: string; // Time part, e.g., "21:04"
 };
 
 type CreateProductFormProps = {
@@ -33,7 +36,9 @@ export default function CreateProductForm({ product, onSubmit, onCancel, isEdit 
       image: null,
       basePrice: 0,
       auctionStart: "",
+      auctionStartTime: "",
       auctionEnd: "",
+      auctionEndTime: "",
     }
   );
   const [isLoading, setIsLoading] = useState(false);
@@ -44,9 +49,25 @@ export default function CreateProductForm({ product, onSubmit, onCancel, isEdit 
     setIsLoading(true);
     setError(null);
     try {
-      await onSubmit(formData);
+      // Combine date and time into ISO 8601 format (YYYY-MM-DDTHH:mm:ss)
+      const auctionStartDate = formData.auctionStart && formData.auctionStartTime
+        ? `${formData.auctionStart}T${formData.auctionStartTime}:00`
+        : "";
+      const auctionEndDate = formData.auctionEnd && formData.auctionEndTime
+        ? `${formData.auctionEnd}T${formData.auctionEndTime}:00`
+        : "";
+      
+      const submitData = {
+        ...formData,
+        auctionStart: auctionStartDate,
+        auctionEnd: auctionEndDate,
+      };
+
+      console.log('Submitting product data:', submitData); // Debug log
+      await onSubmit(submitData);
     } catch (error: any) {
-      setError(error.response?.data?.message || `Failed to ${isEdit ? "update" : "create"} product. Please try again.`);
+      setError(error.message || `Failed to ${isEdit ? "update" : "create"} product. Please try again.`);
+      console.error('Form submission error:', error);
     } finally {
       setIsLoading(false);
     }
@@ -140,7 +161,7 @@ export default function CreateProductForm({ product, onSubmit, onCancel, isEdit 
           </div>
           <div className="grid grid-cols-3 items-center gap-4">
             <Label htmlFor="auctionStart" className="text-left">
-              Auction Start
+              Auction Start Date
             </Label>
             <Input
               id="auctionStart"
@@ -151,14 +172,38 @@ export default function CreateProductForm({ product, onSubmit, onCancel, isEdit 
             />
           </div>
           <div className="grid grid-cols-3 items-center gap-4">
+            <Label htmlFor="auctionStartTime" className="text-left">
+              Auction Start Time
+            </Label>
+            <Input
+              id="auctionStartTime"
+              type="time"
+              value={formData.auctionStartTime}
+              onChange={(e) => setFormData({ ...formData, auctionStartTime: e.target.value })}
+              className="col-span-2"
+            />
+          </div>
+          <div className="grid grid-cols-3 items-center gap-4">
             <Label htmlFor="auctionEnd" className="text-left">
-              Auction End
+              Auction End Date
             </Label>
             <Input
               id="auctionEnd"
               type="date"
               value={formData.auctionEnd}
               onChange={(e) => setFormData({ ...formData, auctionEnd: e.target.value })}
+              className="col-span-2"
+            />
+          </div>
+          <div className="grid grid-cols-3 items-center gap-4">
+            <Label htmlFor="auctionEndTime" className="text-left">
+              Auction End Time
+            </Label>
+            <Input
+              id="auctionEndTime"
+              type="time"
+              value={formData.auctionEndTime}
+              onChange={(e) => setFormData({ ...formData, auctionEndTime: e.target.value })}
               className="col-span-2"
             />
           </div>

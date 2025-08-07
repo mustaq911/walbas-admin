@@ -1,5 +1,4 @@
 "use client";
-
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -7,11 +6,20 @@ import { Sheet, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetT
 import { Filter } from "lucide-react";
 import { useState } from "react";
 
-export default function ProductFilterSheet() {
+type ProductFilterSheetProps = {
+  onCategoryChange: (category: string) => void; // Callback to pass category to parent
+};
+
+export default function ProductFilterSheet({ onCategoryChange }: ProductFilterSheetProps) {
   const [category, setCategory] = useState("all");
+
+  const handleApply = () => {
+    onCategoryChange(category); // Pass selected category to parent
+  };
 
   const handleReset = () => {
     setCategory("all");
+    onCategoryChange("all"); // Reset to fetch all products
   };
 
   return (
@@ -47,7 +55,8 @@ export default function ProductFilterSheet() {
           </div>
         </div>
         <SheetFooter>
-          <Button onClick={handleReset}>Reset Filters</Button>
+          <Button onClick={handleApply}>Apply Filters</Button>
+          <Button variant="outline" onClick={handleReset}>Reset Filters</Button>
         </SheetFooter>
       </SheetContent>
     </Sheet>

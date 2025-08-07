@@ -1,13 +1,13 @@
 "use client";
-
 import { useState } from "react";
-import axios from "axios";
+import Axi from "@/services/interceptors/Axi"; // Use custom Axios instance
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ChevronLeft, ChevronRight, Layers, PackageX, MoreHorizontal } from "lucide-react";
 import Image from "next/image";
+import { toast } from "sonner";
 
 type Product = {
   id: number;
@@ -18,6 +18,7 @@ type Product = {
   basePrice: number;
   auctionStart: string;
   auctionEnd: string;
+  status?: string;
 };
 
 type ProductListProps = {
@@ -41,11 +42,12 @@ export default function ProductList({ searchProduct, products, setProducts, onVi
 
   const handleDelete = async (id: number) => {
     try {
-      await axios.delete(`/products/${id}`);
+      await Axi.delete(`/api/products/${id}`);
       setProducts(products.filter((product) => product.id !== id));
-    } catch (error) {
+      toast.success("Product deleted successfully");
+    } catch (error: any) {
       console.error("Error deleting product:", error);
-      alert("Failed to delete product. Please try again.");
+      toast.error(error.response?.data?.message || "Failed to delete product. Please try again.");
     }
   };
 
@@ -62,6 +64,7 @@ export default function ProductList({ searchProduct, products, setProducts, onVi
                 <TableHead>Base Price</TableHead>
                 <TableHead>Auction Start</TableHead>
                 <TableHead>Auction End</TableHead>
+                <TableHead>Status</TableHead>
                 <TableHead className="w-[100px] text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
@@ -91,6 +94,7 @@ export default function ProductList({ searchProduct, products, setProducts, onVi
                   <TableCell>${product.basePrice.toFixed(2)}</TableCell>
                   <TableCell>{product.auctionStart}</TableCell>
                   <TableCell>{product.auctionEnd}</TableCell>
+                  <TableCell>{product.status}</TableCell>
                   <TableCell className="text-right">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
