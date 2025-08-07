@@ -173,12 +173,12 @@ export default function ProductPage() {
 
   return (
     <AppContent title="Products">
-      {username && (
+      {/* {username && (
         <div className="p-6">
           <h2 className="text-2xl font-semibold">Welcome, {username}!</h2>
           <p className="mt-2 text-muted-foreground">Manage your products below.</p>
         </div>
-      )}
+      )} */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4 w-full px-6">
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 w-full sm:w-auto">
           <div className="relative w-full sm:w-64">
