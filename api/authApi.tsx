@@ -15,26 +15,10 @@ export const authApi = {
 
       // Store token in cookies
       if (response.data) {
-        Cookies.set('token', response.data.token, {
-          expires: 7, // Cookie expires in 7 days
-          secure: process.env.NODE_ENV === 'production', // Secure in production
-          sameSite: 'strict',
-        });
-        Cookies.set('userId', response.data.userId, {
-          expires: 7, // Cookie expires in 7 days
-          secure: process.env.NODE_ENV === 'production', // Secure in production
-          sameSite: 'strict',
-        });
-        Cookies.set('username', response.data.username, {
-          expires: 7, // Cookie expires in 7 days
-          secure: process.env.NODE_ENV === 'production', // Secure in production
-          sameSite: 'strict',
-        });
-        Cookies.set('role', response.data.role, {
-          expires: 7, // Cookie expires in 7 days
-          secure: process.env.NODE_ENV === 'production', // Secure in production
-          sameSite: 'strict',
-        });
+        Cookies.set('token', response.data.token);
+        Cookies.set('userId', response.data.userId);
+        Cookies.set('username', response.data.username);
+        Cookies.set('role', response.data.role);
         console.log('Token stored in cookie:', response.data.token); // Debug log
       } else {
         console.warn('No token received in response:', response.data); // Debug log
