@@ -104,7 +104,7 @@ export default function UserManagementPage() {
   const handleAddUser = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await Axi.get(`/api/user/register?username=${newUser.username}&password=${newUser.password}&email=${newUser.email}&role=${newUser.role}`);
+      const response = await Axi.post(`/api/user/register?username=${newUser.username}&password=${newUser.password}&email=${newUser.email}&role=${newUser.role}`);
       console.log('Add user response:', response.data);
       setUsers([...users, response.data]);
       setNewUser({ username: "", email: "", password: "", role: "CUSTOMER" });

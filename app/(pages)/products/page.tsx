@@ -23,6 +23,8 @@ type Product = {
   auctionStart: string;
   auctionEnd: string;
   status?: string;
+  auctionStartTime?: string;
+  auctionEndTime?: string;
 };
 
 export default function ProductPage() {
@@ -226,7 +228,16 @@ export default function ProductPage() {
           )}
           {(modalOpen === "create" || modalOpen === "edit") && (
             <CreateProductForm
-              product={modalOpen === "edit" && selectedProduct ? { ...selectedProduct, image: null } : undefined}
+              product={
+                modalOpen === "edit" && selectedProduct
+                  ? {
+                      ...selectedProduct,
+                      image: null,
+                      auctionStartTime: selectedProduct.auctionStartTime ?? "",
+                      auctionEndTime: selectedProduct.auctionEndTime ?? "",
+                    }
+                  : undefined
+              }
               onSubmit={modalOpen === "create" ? handleCreateProduct : handleEditProduct}
               onCancel={() => setModalOpen(null)}
               isEdit={modalOpen === "edit"}
