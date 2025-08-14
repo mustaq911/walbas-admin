@@ -1,5 +1,5 @@
 import { useActiveSidebar } from '@/hooks/use-active-sidebar';
-import { Package, Bot, LayoutDashboard, LucideIcon, Users} from 'lucide-react';
+import { LayoutDashboard, LucideIcon } from 'lucide-react';
 // import { usePathname } from 'next/navigation';
 
 type Menu = {
@@ -21,20 +21,20 @@ export function MainSidebarMenuItem(): Menu[] {
             icon: LayoutDashboard,
             active: activeSidebar == "dashboard",
         },
-        {   
-            key: "products",
-            label: "product",
-            href: "/products",
-            icon: Package,
-            active: activeSidebar == "products",
-        },
-         {   
-            key: "users",
-            label: "user",
-            href: "/users",
-            icon: Users,
-            active: activeSidebar == "users",
-        },
+        // {   
+        //     key: "products",
+        //     label: "product",
+        //     href: "/products",
+        //     icon: Package,
+        //     active: activeSidebar == "products",
+        // },
+        //  {   
+        //     key: "users",
+        //     label: "user",
+        //     href: "/users",
+        //     icon: Users,
+        //     active: activeSidebar == "users",
+        // },
         // {   
         //     key: "school",
         //     label: "School",
@@ -42,13 +42,13 @@ export function MainSidebarMenuItem(): Menu[] {
         //     icon: School,
         //     active: activeSidebar == "school",
         // },
-        {   
-            key: "ai",
-            label: "AI",
-            href: "/ai",
-            icon: Bot,
-            active: activeSidebar == "ai",
-        },
+        // {   
+        //     key: "ai",
+        //     label: "AI",
+        //     href: "/ai",
+        //     icon: Bot,
+        //     active: activeSidebar == "ai",
+        // },
     ];
  
     return menuItem;

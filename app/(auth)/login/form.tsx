@@ -114,10 +114,10 @@ export default function AuthForm() {
               name="role"
               render={({ field }) => (
                 <FormItem className="w-full">
-                  <FormLabel>Role</FormLabel>
+                  {/* <FormLabel>Role</FormLabel> */}
                   <FormMessage />
                   <FormControl>
-                    <Input placeholder="ADMIN" {...field} readOnly />
+                    <Input type='hidden' placeholder="ADMIN" {...field} readOnly />
                   </FormControl>
                 </FormItem>
               )}

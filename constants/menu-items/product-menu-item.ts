@@ -1,4 +1,10 @@
-import { Layers, LucideIcon, Gavel } from 'lucide-react';
+import { Layers, 
+    LucideIcon,
+    PlusSquare, 
+    List, 
+    Edit, 
+    Gavel, 
+    Users } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 
 
@@ -30,12 +36,35 @@ export function ProductMenuItem(): Group[] {
             groupLabel: "",
              menus: [
                 {
-                    href: "/products",
+                    href: "/products/list",
                     label: "Manage Product",
                     icon: Layers,
-                    active: pathname == "/products",
+                    active: pathname.includes("/products"),
                     submenus: [
-                      
+                       {
+                            href : "/products/list",
+                            label : "All Products",
+                            icon: List,
+                            active: pathname == "/products/list",
+                        },
+                        {
+                            href : "/products/create",
+                            label : "Create Product",
+                            icon: PlusSquare,
+                            active: pathname == "/products/create",
+                        },
+                        {
+                            href : "/products/update",
+                            label : "Edit Product",
+                            icon: Edit,
+                            active: pathname == "/products/update",
+                        },
+                        {
+                            href : "/products/view",
+                            label : "View Product",
+                            icon: Edit,
+                            active: pathname == "/products/view",
+                        },
                     ]
                 },
                 {
@@ -47,6 +76,15 @@ export function ProductMenuItem(): Group[] {
                       
                     ]
                 },
+                {
+                    href: "/users",
+                    label: "Manage User",
+                    icon: Users,
+                    active: pathname == "/users",
+                    submenus: [
+                      
+                    ]
+                }
             ]
         },
 
